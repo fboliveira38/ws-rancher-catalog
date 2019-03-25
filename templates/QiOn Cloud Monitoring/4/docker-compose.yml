@@ -1,0 +1,74 @@
+grafana:
+  tty: true
+  image: infraws/monitoring:grafana-2.0.0
+  volumes:
+    - grafana-data:/grafana/data
+    - /etc/localtime:/etc/localtime:ro
+  links:
+    - prometheus:prometheus
+
+prometheus:
+  tty: true
+  image: infraws/monitoring:prometheus-2.0.0
+  volumes:
+    - prometheus-data:/var/lib/prometheus
+    - /etc/localtime:/etc/localtime:ro
+  links:
+    - node-exporter:node-exporter
+    - alertmanager:alertmanager
+    - cadvisor:cadvisor
+
+node-exporter:
+  labels:
+    io.rancher.scheduler.global: 'true'
+  tty: true
+  image: infraws/monitoring:node-exporter-2.0.0
+  volumes:
+    - /proc:/usr/proc
+    - /sys:/usr/sys
+    - /:/rootfs
+    - /etc/localtime:/etc/localtime:ro
+
+cadvisor:
+  labels:
+    io.rancher.scheduler.global: 'true'
+  tty: true
+  image: google/cadvisor:latest
+  volumes:
+    - /:/rootfs:ro
+    - /var/run:/var/run:rw
+    - /sys:/sys:ro
+    - /var/lib/docker/:/var/lib/docker:ro
+    - /var/run/docker.sock:/var/run/docker.sock:ro
+    - /etc/localtime:/etc/localtime:ro
+
+dashboards:
+  image: rancher/lb-service-haproxy:v0.9.1
+  ports:
+  - 9090:9090/tcp
+  - 3000:3000/tcp
+  - 9093:9093/tcp
+  labels:
+    io.rancher.container.agent.role: environmentAdmin,agent
+    io.rancher.container.agent_service.drain_provider: 'true'
+    io.rancher.container.create_agent: 'true'
+    io.rancher.scheduler.global: 'true'
+  volumes:
+    - /etc/localtime:/etc/localtime:ro
+
+
+alertmanager:
+  tty: true
+  image: infraws/monitoring:alertmanager-2.0.0
+  links:
+    - prom2teams:prom2teams
+  volumes:
+    - /etc/localtime:/etc/localtime:ro
+
+prom2teams:
+  tty: true
+  image: infraws/monitoring:prom2teams-2.0.0
+  environment:
+    - WEBHOOK_TEAMS="${WEBHOOK_TEAMS}"
+  volumes:
+    - /etc/localtime:/etc/localtime:ro

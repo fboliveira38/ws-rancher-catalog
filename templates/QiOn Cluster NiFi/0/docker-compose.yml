@@ -1,0 +1,26 @@
+nifi-node:
+  image: infraws/monitoring:nifi-node-1.0.0
+  stdin_open: true
+  tty: true
+  links:
+  - nifi-zookeeper:nifi-zookeeper
+  labels:
+    io.rancher.container.pull_image: always
+  environment:
+    NIFI_URL: '${NIFI_URL}'
+  volumes:
+    - provenance_repository_nifi:/opt/nifi/provenance_repository
+    - content_repository_nifi:/opt/nifi/content_repository
+    - flowfile_repository_nifi:/opt/nifi/flowfile_repository
+    - database_repository_nifi:opt/nifi/database_repository
+    - /etc/localtime:/etc/localtime:ro
+    
+nifi-zookeeper:
+  image: zookeeper
+  environment:
+    ZOO_MY_ID: '1'
+    ZOO_SERVERS: server.1=nifi-zookeeper:2888:3888
+  stdin_open: true
+  tty: true
+  labels:
+    io.rancher.container.pull_image: always

@@ -1,0 +1,11 @@
+route:
+    repeat_interval: 30m
+    group_interval: 30m
+    receiver: 'MicrosoftTeams'
+
+receivers:
+    - name: 'MicrosoftTeams'
+      webhook_configs:
+          - send_resolved: true
+            url: 'https://outlook.office.com/webhook/fba8d7e2-0e19-46f9-bc64-d1dad9e1e9a7@f0fb2e50-2a6b-40f4-b5eb-86b33d754b7d/IncomingWebhook/31169f869e4648acbe3770b96f4055dd/3e005a79-3555-4786-b8fc-d0881489e56f'
+            

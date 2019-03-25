@@ -1,0 +1,43 @@
+nifi-node:
+  image: infraws/nifi:1.1.0
+  stdin_open: true
+  tty: true
+  links:
+  - nifi-zookeeper:nifi-zookeeper
+  - nifi-nodes:nifi-nodes
+  labels:
+    io.rancher.container.pull_image: always
+  environment:
+    NIFI_URL: '${NIFI_URL}'
+    HDFS_HOST: '${HDFS_HOST}'
+  volumes:
+    - data_nifi:/opt/nifi/data
+    - /etc/localtime:/etc/localtime:ro
+  ports:
+    - 8443:8443/tcp
+    - 80:8080/tcp
+    - 81:8081/tcp
+    
+
+nifi-nodes:
+  image: infraws/nifi:nodes-1.1.0
+  stdin_open: true
+  tty: true
+  links:
+  - nifi-zookeeper:nifi-zookeeper
+  labels:
+    io.rancher.container.pull_image: always
+  environment:
+    NIFI_URL: '${NIFI_URL}'
+  volumes:
+    - /etc/localtime:/etc/localtime:ro
+    
+nifi-zookeeper:
+  image: infraws/nifi:zookeeper
+  environment:
+    ZOO_MY_ID: '1'
+    ZOO_SERVERS: server.1=nifi-zookeeper:2888:3888
+  stdin_open: true
+  tty: true
+  labels:
+    io.rancher.container.pull_image: always

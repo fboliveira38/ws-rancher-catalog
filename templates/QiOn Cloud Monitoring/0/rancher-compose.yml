@@ -1,0 +1,131 @@
+.catalog:
+  name: QiOn Cloud Monitoring
+  version: v1.0.0
+  description: |
+    QiOn Cloud Monitoring
+  minimum_rancher_version: v1.5.5
+  maintainer: "Fabio Oliveira <fabio.oliveira@wssim.com>"
+  uuid: qion-1.0
+  questions:
+    - variable: "RANCHER_SERVER"
+      description: "IP Address of the rancher server, no HTTP or slashes"
+      label: "Rancher Server:"
+      required: true
+      default: "rancher.example.com"
+      type: "string"
+    - variable: "ACCESS_KEY"
+      description: "Access Key of the rancher server"
+      label: "Access Key Rancher Server:"
+      required: true
+      default: "accesskey"
+      type: "string"
+    - variable: "SECRET_KEY"
+      label: "Secret Ket Rancher Server:"
+      description: "Secret Key of the Rancher Server:"
+      default: 'secretkey'
+      required: true
+      type: "string"
+    
+node-exporter:
+  start_on_create: true
+  health_check:
+    response_timeout: 2000
+    healthy_threshold: 2
+    port: 9100
+    unhealthy_threshold: 3
+    initializing_timeout: 60000
+    interval: 2000
+    strategy: recreate
+    reinitializing_timeout: 60000
+grafana:
+  scale: 2
+  start_on_create: true
+  health_check:
+    response_timeout: 2000
+    healthy_threshold: 2
+    port: 3000
+    unhealthy_threshold: 3
+    initializing_timeout: 60000
+    interval: 2000
+    strategy: recreate
+    reinitializing_timeout: 60000
+cadvisor:
+  start_on_create: true
+  health_check:
+    response_timeout: 2000
+    healthy_threshold: 2
+    port: 8080
+    unhealthy_threshold: 3
+    initializing_timeout: 60000
+    interval: 2000
+    strategy: recreate
+    reinitializing_timeout: 60000
+prometheus-rancher-exporter:
+  scale: 1
+  start_on_create: true
+  health_check:
+    response_timeout: 2000
+    healthy_threshold: 2
+    port: 9173
+    unhealthy_threshold: 3
+    initializing_timeout: 60000
+    interval: 2000
+    strategy: recreate
+    reinitializing_timeout: 60000
+prometheus:
+  retain_ip: true
+  scale: 1
+  start_on_create: true
+  health_check:
+    healthy_threshold: 2
+    response_timeout: 3000
+    port: 9090
+    unhealthy_threshold: 3
+    interval: 30000
+    strategy: recreate
+dashboards:
+  start_on_create: true
+  lb_config:
+    certs: []
+    port_rules:
+    - priority: 1
+      protocol: tcp
+      service: prometheus
+      source_port: 9090
+      target_port: 9090
+    - priority: 2
+      protocol: tcp
+      service: grafana
+      source_port: 3000
+      target_port: 3000
+    - priority: 3
+      protocol: tcp
+      service: cadvisor
+      source_port: 8080
+      target_port: 8080
+    - priority: 4
+      protocol: tcp
+      service: alertmanager
+      source_port: 9093
+      target_port: 9093
+  health_check:
+    healthy_threshold: 2
+    response_timeout: 2000
+    port: 42
+    unhealthy_threshold: 3
+    initializing_timeout: 60000
+    interval: 2000
+    strategy: recreate
+    reinitializing_timeout: 60000
+alertmanager:
+  scale: 2
+  start_on_create: true
+  health_check:
+    response_timeout: 2000
+    healthy_threshold: 2
+    port: 9093
+    unhealthy_threshold: 3
+    initializing_timeout: 60000
+    interval: 2000
+    strategy: recreate
+    reinitializing_timeout: 60000

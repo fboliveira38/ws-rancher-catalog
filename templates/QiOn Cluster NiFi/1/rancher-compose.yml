@@ -1,0 +1,31 @@
+.catalog:
+  name: QiOn Cloud NiFi
+  version: v1.1.0
+  description: |
+    QiOn Cloud NiFi
+  minimum_rancher_version: v1.5.5
+  maintainer: "Fabio Oliveira <fabio.oliveira@wssim.com>"
+  uuid: qion-1.0
+  questions:
+    - variable: "NIFI_URL"
+      description: "URL access NiFi Cluster"
+      label: "URL NiFi:"
+      required: true
+      default: "rancher.example.com"
+      type: "string"
+    - variable: "HDFS_HOST"
+      description: "URL access Hadoop HDFS"
+      label: "URL Hadoop:"
+      required: true
+      default: "hadoop.example.com"
+      type: "string"
+    
+nifi-node:
+  scale: 1
+  start_on_create: true
+nifi-nodes:
+  scale: 1
+  start_on_create: true
+nifi-zookeeper:
+  scale: 1
+  start_on_create: true

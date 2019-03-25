@@ -1,0 +1,7 @@
+name: QiOn Cloud Monitoring
+description: |
+  Full stack tools for monitoring containers and other stuff.
+version: 2.1.0
+category: Monitoring
+maintainer: fabio.oliveira@wssim.com.br
+support: Maintained by Fabio S. de Oliveira

@@ -1,0 +1,7 @@
+name: QiOn Cloud NiFi
+description: |
+  Full stack tools for monitoring containers and other stuff.
+version: 1.0.0
+category: Clustering
+maintainer: fabio.oliveira@wssim.com.br
+support: Maintained by Fabio S. de Oliveira

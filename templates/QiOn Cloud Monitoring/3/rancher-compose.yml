@@ -1,0 +1,111 @@
+.catalog:
+  name: QiOn Cloud Monitoring
+  version: v2.0.0
+  description: |
+    QiOn Cloud Monitoring
+  minimum_rancher_version: v1.6.15
+  maintainer: "Fabio Oliveira <fabio.oliveira@wssim.com>"
+  uuid: qion-1.1
+  questions:
+    - variable: "WEBHOOK_TEAMS"
+      description: "Add the WEBHOOK that you create before"
+      label: "WebHook Teams:"
+      required: true
+      default: "https://teams.example.com"
+      type: "string"
+
+    - variable: "NETDATA_PORT"
+      description: "Port Netdata"
+      label: "Port Netdata: 19999"
+      required: true
+      default: 19999
+      type: "string"
+    
+grafana:
+  scale: 1
+  start_on_create: true
+  health_check:
+    response_timeout: 2000
+    healthy_threshold: 2
+    port: 3000
+    unhealthy_threshold: 3
+    initializing_timeout: 60000
+    interval: 2000
+    strategy: recreate
+    reinitializing_timeout: 60000
+prometheus:
+  retain_ip: true
+  scale: 1
+  start_on_create: true
+  health_check:
+    healthy_threshold: 2
+    response_timeout: 3000
+    port: 9090
+    unhealthy_threshold: 3
+    interval: 30000
+    strategy: recreate
+netdata:
+  scale: 1
+  start_on_create: true
+  health_check:
+    response_timeout: 2000
+    healthy_threshold: 2
+    port: 19999
+    unhealthy_threshold: 3
+    initializing_timeout: 60000
+    interval: 2000
+    strategy: recreate
+    reinitializing_timeout: 60000
+dashboards:
+  start_on_create: true
+  lb_config:
+    certs: []
+    port_rules:
+    - priority: 1
+      protocol: tcp
+      service: prometheus
+      source_port: 9090
+      target_port: 9090
+    - priority: 2
+      protocol: tcp
+      service: grafana
+      source_port: 3000
+      target_port: 3000
+    - priority: 3
+      protocol: tcp
+      service: alertmanager
+      source_port: 9093
+      target_port: 9093
+  health_check:
+    healthy_threshold: 2
+    response_timeout: 2000
+    port: 42
+    unhealthy_threshold: 3
+    initializing_timeout: 60000
+    interval: 2000
+    strategy: recreate
+    reinitializing_timeout: 60000
+alertmanager:
+  scale: 1
+  start_on_create: true
+  health_check:
+    response_timeout: 2000
+    healthy_threshold: 2
+    port: 9093
+    unhealthy_threshold: 3
+    initializing_timeout: 60000
+    interval: 2000
+    strategy: recreate
+    reinitializing_timeout: 60000
+prom2teams:
+  scale: 1
+  start_on_create: true
+  health_check:
+    response_timeout: 2000
+    healthy_threshold: 2
+    port: 8089
+    unhealthy_threshold: 3
+    initializing_timeout: 60000
+    interval: 2000
+    strategy: recreate
+    reinitializing_timeout: 60000

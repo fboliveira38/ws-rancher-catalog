@@ -1,0 +1,10 @@
+route:
+    repeat_interval: 30m
+    group_interval: 30m
+    receiver: 'MicrosoftTeams'
+
+receivers:
+    - name: 'MicrosoftTeams'
+      webhook_configs:
+          - send_resolved: true
+            url: http://prom2teams:8089 

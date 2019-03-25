@@ -1,0 +1,128 @@
+.catalog:
+  name: QiOn Cloud Monitoring
+  version: v1.1.1
+  description: |
+    QiOn Cloud Monitoring
+  minimum_rancher_version: v1.5.5
+  maintainer: "Fabio Oliveira <fabio.oliveira@wssim.com>"
+  uuid: qion-1.1
+  questions:
+    - variable: "WEBHOOK_TEAMS"
+      description: "Add the WEBHOOK that you create before"
+      label: "WebHook Teams:"
+      required: true
+      default: "https://teams.example.com"
+      type: "string"
+
+    - variable: "NODE_EXPORTER_MONITORING"
+      description: "Node Exporter Servers to be monitored"
+      label: "List Node Exporter Servers: 'node-exporter:9100', '0.0.0.0:9100', '0.0.0.0:9100'"
+      required: true
+      default: 'node-exporter:9100'
+      type: "string"
+
+    - variable: "CADVISOR_MONITORING"
+      description: "cAdvisor Servers to be monitored"
+      label: "List cAdvisor Servers: 'cadvisor:8080', '0.0.0.0:8080', '0.0.0.0:8080'"
+      required: true
+      default: 'cadvisor:8080'
+      type: "string"
+    
+node-exporter:
+  start_on_create: true
+  health_check:
+    response_timeout: 2000
+    healthy_threshold: 2
+    port: 9100
+    unhealthy_threshold: 3
+    initializing_timeout: 60000
+    interval: 2000
+    strategy: recreate
+    reinitializing_timeout: 60000
+grafana:
+  scale: 2
+  start_on_create: true
+  health_check:
+    response_timeout: 2000
+    healthy_threshold: 2
+    port: 3000
+    unhealthy_threshold: 3
+    initializing_timeout: 60000
+    interval: 2000
+    strategy: recreate
+    reinitializing_timeout: 60000
+cadvisor:
+  start_on_create: true
+  health_check:
+    response_timeout: 2000
+    healthy_threshold: 2
+    port: 8080
+    unhealthy_threshold: 3
+    initializing_timeout: 60000
+    interval: 2000
+    strategy: recreate
+    reinitializing_timeout: 60000
+prometheus:
+  retain_ip: true
+  scale: 1
+  start_on_create: true
+  health_check:
+    healthy_threshold: 2
+    response_timeout: 3000
+    port: 9090
+    unhealthy_threshold: 3
+    interval: 30000
+    strategy: recreate
+dashboards:
+  start_on_create: true
+  lb_config:
+    certs: []
+    port_rules:
+    - priority: 1
+      protocol: tcp
+      service: prometheus
+      source_port: 9090
+      target_port: 9090
+    - priority: 2
+      protocol: tcp
+      service: grafana
+      source_port: 3000
+      target_port: 3000
+    - priority: 3
+      protocol: tcp
+      service: alertmanager
+      source_port: 9093
+      target_port: 9093
+  health_check:
+    healthy_threshold: 2
+    response_timeout: 2000
+    port: 42
+    unhealthy_threshold: 3
+    initializing_timeout: 60000
+    interval: 2000
+    strategy: recreate
+    reinitializing_timeout: 60000
+alertmanager:
+  scale: 2
+  start_on_create: true
+  health_check:
+    response_timeout: 2000
+    healthy_threshold: 2
+    port: 9093
+    unhealthy_threshold: 3
+    initializing_timeout: 60000
+    interval: 2000
+    strategy: recreate
+    reinitializing_timeout: 60000
+prom2teams:
+  scale: 2
+  start_on_create: true
+  health_check:
+    response_timeout: 2000
+    healthy_threshold: 2
+    port: 8089
+    unhealthy_threshold: 3
+    initializing_timeout: 60000
+    interval: 2000
+    strategy: recreate
+    reinitializing_timeout: 60000

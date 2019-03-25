@@ -1,0 +1,65 @@
+grafana:
+  tty: true
+  image: infraws/monitoring:grafana-1.0
+  volumes:
+    - grafana-data:/grafana/data
+  links:
+    - prometheus:prometheus
+
+prometheus:
+  tty: true
+  image: infraws/monitoring:prometheus-1.0
+  volumes:
+    - prometheus-data:/var/lib/prometheus
+  links:
+    - node-exporter:node-exporter
+    - alertmanager:alertmanager
+    - cadvisor:cadvisor
+
+node-exporter:
+  labels:
+    io.rancher.scheduler.global: 'true'
+  tty: true
+  image: infraws/monitoring:node-exporter-1.0
+  volumes:
+    - /proc:/usr/proc
+    - /sys:/usr/sys
+    - /:/rootfs
+
+cadvisor:
+  labels:
+    io.rancher.scheduler.global: 'true'
+  tty: true
+  image: google/cadvisor:latest
+  volumes:
+    - /:/rootfs:ro
+    - /var/run:/var/run:rw
+    - /sys:/sys:ro
+    - /var/lib/docker/:/var/lib/docker:ro
+    - /var/run/docker.sock:/var/run/docker.sock:ro
+
+prometheus-rancher-exporter:
+  tty: true
+  image: infinityworks/prometheus-rancher-exporter:latest
+  environment:
+    - CATTLE_ACCESS_KEY="${ACCESS_KEY}"
+    - CATTLE_SECRET_KEY="${SECRET_KEY}"
+    - CATTLE_URL="http://${RANCHER_SERVER}:8080/v2-beta"
+    - HIDE_SYS=true
+
+dashboards:
+  image: rancher/lb-service-haproxy:v0.7.15
+  ports:
+  - 9090:9090/tcp
+  - 3000:3000/tcp
+  - 9093:9093/tcp
+  - 8080:8080/tcp
+  labels:
+    io.rancher.container.agent.role: environmentAdmin,agent
+    io.rancher.container.agent_service.drain_provider: 'true'
+    io.rancher.container.create_agent: 'true'
+    io.rancher.scheduler.global: 'true'
+
+alertmanager:
+  tty: true
+  image: infraws/monitoring:alertmanager-1.0
